@@ -6,9 +6,10 @@ from main import *
 @post('/update')
 def post_deal():
     try:
-        start()
-        print('already exist')
-        return 'Deal has been added'
+        if not valid_contact():
+            return 'contact is already exist'
+        valid_contact()
+        return 'contact has been added'
     except KeyError:
         return 'Invalid keys'
 

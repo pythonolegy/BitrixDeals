@@ -36,7 +36,6 @@ def add_contact(data):
                 'ADDRESS': data['contact']['address']
             }
         }
-
     )
     return contact_fields
 
@@ -78,14 +77,14 @@ def get_contacts_list():
     pass
 
 
-def bt_get_phone(data):
-    b.call('crm.duplicate.findbycomm',
+def bt_get_phone():
+    x = b.call('crm.duplicate.findbycomm',
     {
         'ENTITY_TYPE': "CONTACT",
         'TYPE': "PHONE",
         'VALUES': [request.json['contact']['phone']],
     })
-    return True
+    return x
 
 
 bt_contact_list = b.call('crm.contact.list',
@@ -96,10 +95,11 @@ bt_contact_list = b.call('crm.contact.list',
                     )
 
 
+def valid_contact():
+    if not bt_get_phone():
+        add_contact(request.json)
+        return True
 
-def start():
-    if not bt_get_phone(request.json['contact']):
-        return add_contact(request.json)
 
 
 # phones_duplicate = b.call(
