@@ -27,7 +27,7 @@ def add_contact(data):
     contact_fields = b.call(
         'crm.contact.add',
         {
-            'CONTACT_ID': 'ID',
+            # 'CONTACT_ID': 'ID',
             'fields': {
                 'NAME': data['contact']['name'],
                 'LAST_NAME': data['contact']['surname'],
@@ -52,7 +52,7 @@ def add_deal(data, k):
                 'UF_CRM_DELIVERY_PRODUCTS': add_products(data, k),
                 'UF_CRM_DELIVERY_ADDRESS': data['delivery_address'],
                 'UF_CRM_DELIVERY_DATE': data['delivery_date'],
-                'CONTACT_ID': add_contact(data)
+                'CONTACT_ID': bt_get_phone()['CONTACT'][0]
             }
         }
     )
@@ -60,6 +60,11 @@ def add_deal(data, k):
 
 def valid(x, y):
     return x in y
+
+
+# def link_deal_contact():
+#     valid_add_contact()
+
 
 
 def test():
@@ -95,10 +100,23 @@ bt_contact_list = b.call('crm.contact.list',
                     )
 
 
-def valid_contact():
+bt_check_deal_by_dc = b.call('crm.deal.list',
+                         {
+                             'FILTER': ['UF_*'],
+                             'SELECT': ['NAME', 'LAST_NAME', 'ADDRESS', 'PHONE']
+                         }
+                    )
+
+
+def valid_contact():   ###главная
     if not bt_get_phone():
         add_contact(request.json)
-        return True
+    add_deal(request.json, 'products')
+    if bt_get_phone():
+
+
+
+
 
 
 
