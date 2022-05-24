@@ -4,11 +4,12 @@
 from bottle import request
 from fast_bitrix24 import Bitrix
 
-webhook = 'https://b24-xlxcp4.bitrix24.ru/rest/1/tscp6l1psv3emwmq/'
-b = Bitrix(webhook)
+
 
 
 ###------------------------------------  ---  ---START HERE---  ---  ------------------------------------------------###
+webhook = 'https://b24-xlxcp4.bitrix24.ru/rest/1/tscp6l1psv3emwmq/'
+b = Bitrix(webhook)
 
 
 def add_products(data, k):  # ---return products from request
@@ -77,12 +78,28 @@ def get_contacts_list():
     pass
 
 
+def bt_get_phone(data):
+    b.call('crm.duplicate.findbycomm',
+    {
+        'ENTITY_TYPE': "CONTACT",
+        'TYPE': "PHONE",
+        'VALUES': [request.json['contact']['phone']],
+    })
+    return True
+
+
 bt_contact_list = b.call('crm.contact.list',
                          {
                              'FILTER': ['*'],
                              'SELECT': ['NAME', 'LAST_NAME', 'ADDRESS', 'PHONE']
                          }
-                         )
+                    )
+
+
+
+def start():
+    if not bt_get_phone(request.json['contact']):
+        return add_contact(request.json)
 
 
 # phones_duplicate = b.call(
