@@ -1,7 +1,7 @@
 # from time import sleep
 # from datetime import datetime
 
-# from bottle import request
+from bottle import request
 from fast_bitrix24 import Bitrix
 
 webhook = 'https://b24-xlxcp4.bitrix24.ru/rest/1/tscp6l1psv3emwmq/'
@@ -23,17 +23,21 @@ def check_number(data, k):  # ---return number from request
 
 
 def add_contact(data):
-    b.call(
+    contact_fields = b.call(
         'crm.contact.add',
         {
+            'CONTACT_ID': 'ID',
             'fields': {
                 'NAME': data['contact']['name'],
                 'LAST_NAME': data['contact']['surname'],
-                'PHONE': data['contact']['phone'],
+                "TYPE_ID": "CLIENT",
+                'PHONE': [{'VALUE': data['contact']['phone']}],
                 'ADDRESS': data['contact']['address']
-            }}
+            }
+        }
+
     )
-    return 'Contact added'
+    return contact_fields
 
 
 def add_deal(data, k):
@@ -47,31 +51,60 @@ def add_deal(data, k):
                 'UF_CRM_DELIVERY_CODE': data['delivery_code'],
                 'UF_CRM_DELIVERY_PRODUCTS': add_products(data, k),
                 'UF_CRM_DELIVERY_ADDRESS': data['delivery_address'],
-                'UF_CRM_DELIVERY_DATE': data['delivery_date']
+                'UF_CRM_DELIVERY_DATE': data['delivery_date'],
+                'CONTACT_ID': add_contact(data)
             }
         }
     )
 
 
-def duplicate(data, k):  # ---check a duplicate by params
-    x = b.call(
-        'crm.duplicate.findbycomm',
-        {
-            'ENTITY_TYPE': "CONTACT",
-            'TYPE': "PHONE",
-            'VALUES': check_number(data, k)  # TODO доработать
-        })
-    return x
-
-
-def valid(x, y):  # ---valid function
+def valid(x, y):
     return x in y
+
+
+def test():
+    d = request.json['contact']
+    d = {'NAME': d['name'], 'LAST_NAME': d['surname'], 'ADDRESS': d['address']}
+    return d
+
+
+def check_contact():
+    pin = request.json['contact']
+    return pin
+
+
+def get_contacts_list():
+    pass
+
+
+bt_contact_list = b.call('crm.contact.list',
+                         {
+                             'FILTER': ['*'],
+                             'SELECT': ['NAME', 'LAST_NAME', 'ADDRESS', 'PHONE']
+                         }
+                         )
+
+
+# phones_duplicate = b.call(
+#             'crm.duplicate.findbycomm',
+#             {
+#                 'ENTITY_TYPE': "CONTACT",
+#                 'TYPE': "PHONE",
+#                 'VALUES': 'PHONE'
+#             })
+
+
+# contact_list = b.list_and_get(
+#     'crm.contact.fields',
+#     'ID'
+#
+# )
 
 
 deals = b.get_all('crm.deal.list')
 
-numbers = b.get_by_ID('crm.deal.contact.items.get',
-                      [d['ID'] for d in deals])
+nums = b.get_by_ID('crm.deal.contact.items.get',
+                   [d['ID'] for d in deals])
 
 
 ###------------------------------------    Main() Starter Function    -----------------------------------------------###
