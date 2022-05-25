@@ -5,10 +5,8 @@ from main import *
 
 @post('/update')
 def post_deal():
-    valid_contact()
-    # print(bt_get_phone())
+    # valid_contact()
     return 'ok'
-
 # @post('/update')
 # def post_deal():
 #     try:
