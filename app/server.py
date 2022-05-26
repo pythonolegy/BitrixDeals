@@ -5,10 +5,11 @@ from main import *
 
 @post('/update')
 def post_deal():
-    # valid_contact()
-    # valid_contact()
-    print(valid_code())
-    valid_contact()
+    # print(bt_find_by_delivery_code()[0]['ID'])
+    # print(get_info_by_id()['UF_CRM_DELIVERY_PRODUCTS'])
+    # add_deal(request.json,'products')
+    print(valid_delivery_fields())
+   #  print(add_products(request.json, 'products'))
 # @post('/update')
 # def post_deal():
 #     try:
