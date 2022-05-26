@@ -6,7 +6,9 @@ from main import *
 @post('/update')
 def post_deal():
     # valid_contact()
-    return 'ok'
+    # valid_contact()
+    print(valid_code())
+    valid_contact()
 # @post('/update')
 # def post_deal():
 #     try:
