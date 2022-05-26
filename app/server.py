@@ -5,11 +5,7 @@ from main import *
 
 @post('/update')
 def post_deal():
-    # try:
-    #     print(valid_contact())
-    #     "Операция совершена успешно"
-    # except KeyError:
-    #     return "Проверьте правильность введеных данных"
-    # # print(update_contact())
-    print(valid_delivery_code())
+    print(valid_contact())
+    # print(bt_get_phone_duplicate())
+
 run(host='localhost', port=8080)
