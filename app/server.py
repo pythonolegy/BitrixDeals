@@ -1,11 +1,15 @@
-from bottle import run, post, request
+from bottle import run, post
 
-from main import *
+from main import main
 
 
 @post('/update')
 def post_deal():
-    print(valid_contact())
-    # print(bt_get_phone_duplicate())
+    try:
+        return main()
+    except KeyError:
+        return 'Проверьте введенные данные'
+
 
 run(host='localhost', port=8080)
+
