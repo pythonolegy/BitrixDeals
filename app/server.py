@@ -1,6 +1,6 @@
 from bottle import run, post
 
-from main import *
+from main import main
 
 
 @post('/update')
@@ -12,4 +12,3 @@ def post_deal():
 
 
 run(host='localhost', port=8080)
-
