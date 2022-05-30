@@ -1,13 +1,13 @@
 version: '3'
 services:
   currency:
-    container_name: currency-updater
+    container_name: deals-updater
     build:
       context: ./app
       dockerfile: Dockerfile
     command: python main.py
-    networks:
-      - currency-network
+    deals:
+      - deals-network
 networks:
-  currency-network:
+  deals-network:
     driver: bridge
