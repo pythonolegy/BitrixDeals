@@ -3,7 +3,7 @@ from fast_bitrix24 import Bitrix
 
 ###------------------------------------  ---  ---START HERE---  ---  ------------------------------------------------###
 
-webhook = 'https://b24-xlxcp4.bitrix24.ru/rest/1/tscp6l1psv3emwmq/'   # персональный вебхук Bitrix24
+webhook =    # персональный вебхук Bitrix24
 b = Bitrix(webhook)  # переменная-сокращение для вызова методов 'b.call()'
 
 
