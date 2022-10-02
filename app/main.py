@@ -1,15 +1,13 @@
 from bottle import request
 from fast_bitrix24 import Bitrix
 
-###------------------------------------  ---  ---START HERE---  ---  ------------------------------------------------###
-
-webhook =    # персональный вебхук Bitrix24
-b = Bitrix(webhook)  # переменная-сокращение для вызова методов 'b.call()'
+webhook = 'example'  # Bitrix24 personal webhook
+b = Bitrix(webhook)  # variable-abbreviation for calling methods 'b.call()'
 
 
 def add_products():
-    """ Добавление в список продукты из запроса с ключом 'products'
-       *Функция возвращает список 'products_list' """
+    """ Adding products from a request with the 'products' key to the list
+       *The function returns a list of 'products_list' """
     products_list = []
     for product in request.json['products']:
         products_list.append(product)
@@ -17,8 +15,8 @@ def add_products():
 
 
 def add_deal_link_contact():
-    """Добавление сделки с полями 'fields' из запроса
-    *В случае наличия контакта, связывает сделку и контакт"""
+    """ Adding a transaction with 'fields' fields from the request
+        *If there is a contact, connects the transaction and the contact """
     b.call(
         'crm.deal.add',
         {
@@ -35,7 +33,7 @@ def add_deal_link_contact():
 
 
 def add_contact():
-    """Добавление контакта с полями 'fields' из запроса"""
+    """ Adding a contact with 'fields' fields from a request """
     contact_fields = b.call(
         'crm.contact.add',
         {
@@ -53,9 +51,9 @@ def add_contact():
 
 def add_contact_to_deal():
     """
-    Добавление контакта в сделку
-        * 'id': 'ID' сделки
-        * 'CONTACT_ID': 'ID' контакта
+    Adding a contact to a deal
+        * 'id': 'ID' of the transaction
+        * 'CONTACT_ID': 'ID' of the contact
     """
     b.call(
         'crm.deal.contact.add',
@@ -70,9 +68,9 @@ def add_contact_to_deal():
 
 def update_delivery_fields():
     """
-    Обновление полей 'fields' сделки
-        * 'FIELD_NAME': str
-        * 'id': 'ID' сделки
+    Updating the 'fields' of the transaction
+        * '* 'FIELD_NAME': string
+        * 'id': 'ID' of the transaction
     """
     b.call(
         'crm.deal.update',
@@ -89,8 +87,8 @@ def update_delivery_fields():
 
 def bt_get_phone_duplicate():
     """
-    Поиск дубликата по номеру телефона контакта из запроса
-        * Функция возвращает номер телефона
+    Search for a duplicate by the contact's phone number from the request
+        * The function returns the phone number
     """
     x = b.call('crm.duplicate.findbycomm',
                {
@@ -103,8 +101,8 @@ def bt_get_phone_duplicate():
 
 def bt_find_by_delivery_code():
     """
-        Поиск дубликата по номеру заявки из запроса
-            * Функция возвращает поля и значения полей сделки со значением номера заявки
+    Search for a duplicate by the application number from the request
+        * The function returns the fields and values of the transaction fields with the value of the order number
     """
     x = b.call('crm.deal.list',
                {
@@ -114,8 +112,9 @@ def bt_find_by_delivery_code():
 
 
 def get_info_by_id():
-    """  * Функция со значением аналогичным 'bt_find_by_delivery_code()', иного вида, с использованием другого метода
-         * используется во избежание некоторых пересечений"""
+    """
+        * A function with a value similar to 'bt_find_by_delivery_code()', of a different type, using a different method
+        * used to avoid some intersections """
     x = b.call(
         'crm.deal.get',
         {'ID': bt_find_by_delivery_code()[0]['ID']}
@@ -125,9 +124,9 @@ def get_info_by_id():
 
 def valid_delivery_code():
     """
-    Функция проверка на совпадение номера заявки
-        * Если код заявки есть, возвращает True или False
-        * Используется для логической расстановки инструкций в функции 'main()'
+    The function check for a match of the application number
+        * If there is a request code, returns True or False
+        * Used for logical placement of instructions in the 'main()' function
     """
     try:
         return request.json['delivery_code'] == valid_get_info_by_id()['UF_CRM_DELIVERY_CODE']
@@ -136,7 +135,7 @@ def valid_delivery_code():
 
 
 def valid_get_info_by_id():
-    """Функция, аналогичная по использованию функции 'valid_delivery_code()', возвращает True или False"""
+    """ A function similar to using the 'valid_delivery_code()' function returns True or False """
     try:
         return get_info_by_id()
     except:
@@ -145,10 +144,10 @@ def valid_get_info_by_id():
 
 def valid_delivery_fields():
     """
-        Функция, аналогичная по использованию функции 'valid_delivery_code()',
-        * Проверяется совпадают ли указанные поля сделки с полями в запросе
-        * возвращает True или False
-        """
+    A function similar to using the 'valid_delivery_code()' function,
+        * Checks whether the specified transaction fields match the fields in the request
+        * returns True or False
+    """
     try:
         a, p = request.json['delivery_date'], request.json['delivery_address']
         c, d = get_info_by_id()['UF_CRM_DELIVERY_DATE'], get_info_by_id()['UF_CRM_DELIVERY_ADDRESS']
@@ -159,23 +158,20 @@ def valid_delivery_fields():
 
 
 def main():
-    """ Главная функция, запускаемая из файла 'server.py' с методом 'POST' """
+    """ The main function launched from the file 'server.py ' with the 'POST' method """
     if not bt_get_phone_duplicate():
         add_contact()
         if not valid_delivery_fields():
             add_deal_link_contact()
-            return 'Сделка и контакт созданы'
+            return 'Deal and contact created'
         add_contact_to_deal()
-        return "Контакт создан, сделка с таким номером заявки уже существует, проверьте номер заявки"
+        return 'A contact has been created, a deal with such an application number already exists, check the application number'
     elif bt_get_phone_duplicate():
         if not valid_delivery_code():
             add_deal_link_contact()
-            return 'Контакт обнаружен, объединение со сделкой'
+            return 'Contact detected, merge with transaction'
         elif valid_delivery_code():
             if not valid_delivery_fields():
                 update_delivery_fields()
-                return 'Сделка обновлена'
-    return 'Изменений не обнаружено'
-
-
-###-------------------------------------- -- Finish - Here --  ------------------------------------------------------###
+                return 'Deal updated'
+    return 'No changes detected'

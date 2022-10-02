@@ -8,7 +8,7 @@ def post_deal():
     try:
         return main()
     except KeyError:
-        return 'Проверьте введенные данные'
+        return 'Check the entered data'
 
 
 run(host='localhost', port=8080)
